@@ -19,7 +19,7 @@ const MainLayouts = () => {
     <>
       <Navbar cart={cart} />
       <main className="p-4">
-        <Outlet context={{ cart, setCart }} />
+       <Outlet context={{ cart, setCart }} />
       </main>
     </>
   );

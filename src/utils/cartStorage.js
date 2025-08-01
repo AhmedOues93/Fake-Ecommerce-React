@@ -1,17 +1,26 @@
+
 export const getCartFromStorage = () => {
-  try {
-    const cart = localStorage.getItem("cart");
-    return cart ? JSON.parse(cart) : {};
-  } catch (error) {
-    console.error("Failed to retrieve cart from localStorage", error);
-    return {};
-  }
+  const stored = localStorage.getItem("cart");
+  return stored ? JSON.parse(stored) : {};
 };
 
 export const saveCartToStorage = (cart) => {
-  try {
-    localStorage.setItem("cart", JSON.stringify(cart));
-  } catch (error) {
-    console.error("Failed to save cart to localStorage", error);
+  localStorage.setItem("cart", JSON.stringify(cart));
+};
+
+export const addToCart = (cart, product) => {
+  const existing = cart[product.id];
+  const quantity = existing ? existing.quantity + 1 : 1;
+  return { ...cart, [product.id]: { product, quantity } };
+};
+
+export const removeFromCart = (cart, productId) => {
+  const updatedCart = { ...cart };
+  if (!updatedCart[productId]) return updatedCart;
+  if (updatedCart[productId].quantity === 1) {
+    delete updatedCart[productId];
+  } else {
+    updatedCart[productId].quantity -= 1;
   }
+  return updatedCart;
 };

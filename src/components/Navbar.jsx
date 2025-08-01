@@ -19,7 +19,7 @@ const Navbar = ({ cart = {} }) => {
           Home
         </Link>
         <Link to="/contact" className="btn btn-outline btn-neutral">
-          Contact
+         Cart
         </Link>
         <Link to="/cart" className="btn btn-ghost btn-circle relative">
           <svg
