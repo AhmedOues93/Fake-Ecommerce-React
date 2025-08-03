@@ -1,31 +1,50 @@
 import React from "react";
 import { useOutletContext } from "react-router-dom";
-import { addToCart, removeFromCart } from "../utils/cartStorage";
 
 const Cart = () => {
   const { cart, setCart } = useOutletContext();
 
-  const handleAdd = (item) => {
-    const updated = addToCart(cart, item);
-    setCart(updated);
+  const handleAdd = (product) => {
+    setCart((prev) => ({
+      ...prev,
+      [product.id]: {
+        ...product,
+        quantity: product.quantity + 1,
+      },
+    }));
   };
 
-  const handleRemove = (item) => {
-    const updated = removeFromCart(cart, item.id);
-    setCart(updated);
+  const handleRemove = (product) => {
+    setCart((prev) => {
+      const current = prev[product.id];
+      if (!current) return prev;
+
+      if (current.quantity === 1) {
+        const updated = { ...prev };
+        delete updated[product.id];
+        return updated;
+      }
+
+      return {
+        ...prev,
+        [product.id]: {
+          ...current,
+          quantity: current.quantity - 1,
+        },
+      };
+    });
   };
 
-  const cartItems = Object.values(cart);
-  const total = cartItems.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
-    0
-  );
+  const total = Object.values(cart).reduce((sum, p) => {
+    return sum + p.price * p.quantity;
+  }, 0);
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-4">🛍️ Your Cart</h2>
-      {cartItems.length === 0 ? (
-        <p>Your cart is empty.</p>
+    <div className="p-8">
+      <h1 className="text-2xl font-bold mb-6">🛒 Your Cart</h1>
+
+      {Object.keys(cart).length === 0 ? (
+        <p className="text-gray-500">Your cart is empty.</p>
       ) : (
         <div className="overflow-x-auto">
           <table className="table">
@@ -34,26 +53,26 @@ const Cart = () => {
                 <th>Product</th>
                 <th>Price</th>
                 <th>Qty</th>
-                <th>Line Total</th>
-                <th>Actions</th>
+                <th>Total</th>
+                <th>Modify</th>
               </tr>
             </thead>
             <tbody>
-              {cartItems.map(({ product, quantity }) => (
+              {Object.values(cart).map((product) => (
                 <tr key={product.id}>
                   <td>{product.title}</td>
                   <td>{product.price.toFixed(2)} €</td>
-                  <td>{quantity}</td>
-                  <td>{(product.price * quantity).toFixed(2)} €</td>
+                  <td>{product.quantity}</td>
+                  <td>{(product.price * product.quantity).toFixed(2)} €</td>
                   <td className="flex gap-2">
                     <button
-                      className="btn btn-sm btn-success"
+                      className="btn btn-sm bg-green-700 text-white hover:bg-white hover:text-green-700 border border-green-700"
                       onClick={() => handleAdd(product)}
                     >
                       +
                     </button>
                     <button
-                      className="btn btn-sm btn-error"
+                      className="btn btn-sm bg-red-700 text-white hover:bg-white hover:text-red-700 border border-red-700"
                       onClick={() => handleRemove(product)}
                     >
                       -
@@ -64,8 +83,10 @@ const Cart = () => {
             </tbody>
             <tfoot>
               <tr>
-                <th colSpan="3">Total</th>
-                <th>{total.toFixed(2)} €</th>
+                <td colSpan="3" className="text-right font-bold">Total</td>
+                <td colSpan="2" className="text-lg font-bold">
+                  {total.toFixed(2)} €
+                </td>
               </tr>
             </tfoot>
           </table>
@@ -76,3 +97,4 @@ const Cart = () => {
 };
 
 export default Cart;
+

@@ -1,26 +1,55 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 const Navbar = ({ cart = {} }) => {
+  const [categories, setCategories] = useState([]);
   const totalItems = Object.values(cart).reduce(
     (sum, item) => sum + item.quantity,
     0
   );
 
+  useEffect(() => {
+    fetch("https://fakestoreapi.com/products/categories")
+      .then((res) => res.json())
+      .then(setCategories);
+  }, []);
+
   return (
-    <nav className="navbar bg-gray-100 shadow-md px-6 py-3 flex justify-between items-center">
-      <div>
-        <Link to="/" className="text-2xl font-bold text-primary">
-          🛒 Ahmed Store
-        </Link>
-      </div>
-      <div className="flex items-center gap-6">
-        <Link to="/" className="btn btn-outline btn-neutral">
-          Home
-        </Link>
-        <Link to="/contact" className="btn btn-outline btn-neutral">
-         Cart
-        </Link>
+    <nav className="navbar bg-green-200 shadow-md px-6 py-3 flex justify-between items-center">
+       <h1 className="text-4xl font-extrabold text-gray-700 hover:text-green-900">
+    🛒 Ahmed Store
+  </h1>
+      <div className="flex items-center gap-4">
+       <Link to="/Home" className="btn bg-green-700 text-white text-xl hover:bg-white hover:text-green-700">
+  Home
+</Link>
+
+     
+        <div className="dropdown dropdown-hover">
+          <label tabIndex={0} className="btn bg-green-700   text-white text-xl btn-h
+        hover:bg-white  hover:text-green-700">
+            Categories
+          </label>
+         <ul
+  tabIndex={0}
+  className="dropdown-content z-[1] menu p-2 shadow bg-white rounded-box w-52"
+>
+  {categories.map((cat) => (
+    <li key={cat}>
+      <Link
+        to={`/category/${cat}`}
+        className="hover:bg-green-300 hover:text-black"
+      >
+        {cat}
+      </Link>
+    </li>
+  ))}
+</ul>
+
+        </div>
+
+      
+
         <Link to="/cart" className="btn btn-ghost btn-circle relative">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -42,6 +71,7 @@ const Navbar = ({ cart = {} }) => {
             </span>
           )}
         </Link>
+
         <div className="dropdown dropdown-end">
           <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
             <div className="w-10 rounded-full overflow-hidden">
@@ -55,3 +85,4 @@ const Navbar = ({ cart = {} }) => {
 };
 
 export default Navbar;
+
